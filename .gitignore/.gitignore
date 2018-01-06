@@ -67,5 +67,5 @@ for (x=vt1;x<16;x++) {
 goc=abs(vt2-vt1)*22.5;
 if ( /*chỗ này bí rồiiii*/  ) { myOmni.move_omni(-goc,200); } else { myOmni.move_omni(goc,200);};
 
-
+vt1=vt2;
 }
