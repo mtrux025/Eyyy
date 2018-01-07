@@ -13,7 +13,7 @@ int EN3 = 7;
 int a[16] = {A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15};
 int b[16];
 int value[16];
-int vt1,vt2,x,k;
+int vt1,vt2,i,x,k;
 float goc;
 
 void setup() {
@@ -47,6 +47,7 @@ value[i]=constrain(value[i],0,1023);
 }
 
 void loop() {
+for (i=0;i<16;i++) {(b[i]=0);};
 //Dò 10 cảm biến gần nhất từ vt1
 for (x=vt1; x < vt1 +5; x++) {
   if (x>15) { ( k=x-16 ); };
