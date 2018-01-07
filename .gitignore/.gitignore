@@ -13,7 +13,7 @@ int EN3 = 7;
 int a[16] = {A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15};
 int b[16];
 int value[16];
-int vt1,vt2,i,x,k;
+int vt1,vt2,i,x,k,k1,k2,k3,count,countvt,khoangcach;
 float goc;
 
 void setup() {
@@ -30,7 +30,8 @@ pinMode (EN2, OUTPUT);
 pinMode (EN3, OUTPUT);
 vt1=0; //Vị trí xe chạy đầu tiên hướng từ con A0
 }
-void doline(int i) {
+
+float doline(int i) {
   int minSensorVal = 1023;
   int maxSensorVal = 0;
 while (millis() < 5000) {
@@ -47,8 +48,12 @@ value[i]=constrain(value[i],0,1023);
 }
 
 void loop() {
-for (i=0;i<16;i++) {(b[i]=0);};
-//Dò 10 cảm biến gần nhất từ vt1
+for (i=0;i<16;i++) { (b[i]=0); };
+countvt=0;
+while ( (doline(vt1+1)>=511.5) && (doline(vt1-1)>=511.5) )/*TH xe chạy thẳng hoài*/ { 
+  goc=vt1*22.5;
+  myOmni.move_omni(goc,200);
+}
 for (x=vt1; x < vt1 +5; x++) {
   if (x>15) { ( k=x-16 ); };
   doline(k);
@@ -61,12 +66,24 @@ for (x=vt1; x > vt1-5  ; x--) {
 }
 for (x=vt1;x<16;x++) {
   if (x>15) {(k1=x-16);} else {(k1=x);} ;
-  if (x+1>15) {k2=x+1-16);} else {(k2=x+1);} ;
-  if (x+2>15) {k3=x+2-16);} else {(k3=x+2);} ;
-  if (b[k1]==1) and (b[k2]==1) and (b[k3]==1) { (vt2=k2); }
+  if (x+1>15) {(k2=x+1-16);} else {(k2=x+1);} ;
+  if (x+2>15) {(k3=x+2-16);} else {(k3=x+2);} ;
+  khoangcach++;
+  if ( (b[k1]==1) and (b[k2]==1) and (b[k3]==1) ) 
+  { vt2=k2;
+    khoangcach--;
+    countvt++;
+  }
 }
+if ( countvt > 1 ) {
+  count++;
+  if (count==1) { myOmni.move_omni(-90,200); delay(500);  }//gặp khúc cua 90 độ đầu tiên => rẽ phải
+  if ( (count==2) || (count==4) ) { myOmni.move_omni(0,200); }//khúc có 2 đường line thì tt đi thẳng
+  if (count==3) { myOmni.move_omni(90,200); delay(500); } //gặp khúc cua 90 độ thứ 2 => rẽ trái
+ } else {
 goc=abs(vt2-vt1)*22.5;
-if ( /*chỗ này bí rồiiii*/  ) { myOmni.move_omni(-goc,200); } else { myOmni.move_omni(goc,200);};
-
+if (khoangcach>8) { goc=goc*(-1); };
+myOmni.move_omni(goc,200);
+}
 vt1=vt2;
 }
